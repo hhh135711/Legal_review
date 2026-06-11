@@ -1,0 +1,57 @@
+{
+  "uid": "lexicheck",
+  "title": "衡鉴 LexiCheck 系统监控",
+  "timezone": "browser",
+  "refresh": "5s",
+  "time": { "from": "now-15m", "to": "now" },
+  "panels": [
+    {
+      "id": 1, "type": "stat", "title": "累计请求数",
+      "gridPos": { "x": 0, "y": 0, "w": 4, "h": 5 },
+      "datasource": { "type": "prometheus", "uid": "prom" },
+      "targets": [{ "expr": "sum(http_requests_total{handler!~\"/metrics|/health\"})", "refId": "A" }],
+      "fieldConfig": { "defaults": { "color": { "mode": "fixed", "fixedColor": "blue" } }, "overrides": [] }
+    },
+    {
+      "id": 2, "type": "stat", "title": "当前QPS",
+      "gridPos": { "x": 4, "y": 0, "w": 4, "h": 5 },
+      "datasource": { "type": "prometheus", "uid": "prom" },
+      "targets": [{ "expr": "sum(rate(http_requests_total[1m]))", "refId": "A" }],
+      "fieldConfig": { "defaults": { "decimals": 1, "color": { "mode": "fixed", "fixedColor": "green" } }, "overrides": [] }
+    },
+    {
+      "id": 3, "type": "stat", "title": "P95延迟",
+      "gridPos": { "x": 8, "y": 0, "w": 4, "h": 5 },
+      "datasource": { "type": "prometheus", "uid": "prom" },
+      "targets": [{ "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le))", "refId": "A" }],
+      "fieldConfig": { "defaults": { "unit": "s", "decimals": 3, "color": { "mode": "fixed", "fixedColor": "orange" } }, "overrides": [] }
+    },
+    {
+      "id": 4, "type": "stat", "title": "服务存活",
+      "gridPos": { "x": 12, "y": 0, "w": 4, "h": 5 },
+      "datasource": { "type": "prometheus", "uid": "prom" },
+      "targets": [{ "expr": "up{job=\"lexicheck\"}", "refId": "A" }],
+      "fieldConfig": { "defaults": { "mappings": [{ "type": "value", "options": { "1": { "text": "UP", "color": "green" }, "0": { "text": "DOWN", "color": "red" } } }] }, "overrides": [] }
+    },
+    {
+      "id": 5, "type": "timeseries", "title": "QPS 按接口",
+      "gridPos": { "x": 0, "y": 5, "w": 12, "h": 9 },
+      "datasource": { "type": "prometheus", "uid": "prom" },
+      "targets": [{ "expr": "sum(rate(http_requests_total{handler!~\"/metrics\"}[1m])) by (handler)", "legendFormat": "{{handler}}", "refId": "A" }],
+      "fieldConfig": { "defaults": { "custom": { "fillOpacity": 12, "lineWidth": 2 } }, "overrides": [] }
+    },
+    {
+      "id": 6, "type": "timeseries", "title": "请求延迟分位线 (P50 / P95 / P99)",
+      "gridPos": { "x": 12, "y": 5, "w": 12, "h": 9 },
+      "datasource": { "type": "prometheus", "uid": "prom" },
+      "targets": [
+        { "expr": "histogram_quantile(0.50, sum(rate(http_request_duration_seconds_bucket[2m])) by (le))", "legendFormat": "P50", "refId": "A" },
+        { "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[2m])) by (le))", "legendFormat": "P95", "refId": "B" },
+        { "expr": "histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket[2m])) by (le))", "legendFormat": "P99", "refId": "C" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "s", "custom": { "fillOpacity": 8, "lineWidth": 2 } }, "overrides": [] }
+    }
+  ],
+  "schemaVersion": 39,
+  "version": 1
+}

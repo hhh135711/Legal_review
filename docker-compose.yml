@@ -24,6 +24,8 @@ services:
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
     volumes:
       - ./deploy/grafana-datasource.yml:/etc/grafana/provisioning/datasources/ds.yml:ro
+      - ./deploy/grafana-dashboards.yml:/etc/grafana/provisioning/dashboards/provider.yml:ro
+      - ./deploy/lexicheck-dashboard.json:/var/lib/grafana/dashboards/lexicheck.json:ro
     ports:
       - "3000:3000"
     restart: unless-stopped
