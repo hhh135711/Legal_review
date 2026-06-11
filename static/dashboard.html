@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>衡鉴 LexiCheck · 运维监控中心</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+<style>
+:root{--bg:#0b1220;--panel:#111c30;--line:#1f3354;--txt:#dce7f5;--sub:#7d93b5;--acc:#3b82f6;--gold:#d4a843;--ok:#34d399;--bad:#ef4444;--font:'Segoe UI','Microsoft YaHei',sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--txt);font-family:var(--font);padding:26px 34px}
+.hd{display:flex;align-items:center;gap:16px;margin-bottom:22px}
+.hd h1{font-size:20px}.hd h1 b{color:var(--gold)}
+.hd .nav{margin-left:auto;display:flex;gap:14px;font-size:13px}
+.hd .nav a{color:var(--sub);text-decoration:none}.hd .nav a:hover{color:var(--txt)}
+.kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-bottom:18px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
+.kpi .v{font-size:26px;font-weight:700;font-family:Consolas,monospace}
+.kpi .l{font-size:12px;color:var(--sub);margin-top:4px}
+.kpi.g .v{color:var(--ok)}.kpi.b .v{color:var(--acc)}.kpi.y .v{color:var(--gold)}
+.row{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:14px}
+.row2{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px}
+.card h3{font-size:12px;color:var(--sub);letter-spacing:1.5px;margin-bottom:12px}
+.chart{height:230px}
+.hstat{display:flex;flex-direction:column;gap:10px}
+.comp{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--bg);border-radius:10px;font-size:13px}
+.comp .led{width:10px;height:10px;border-radius:50%;background:var(--ok);box-shadow:0 0 8px var(--ok);animation:pulse 2s infinite}
+.comp.down .led{background:var(--bad);box-shadow:0 0 8px var(--bad)}
+.comp .ms{margin-left:auto;color:var(--sub);font-family:Consolas,monospace;font-size:11px}
+@keyframes pulse{50%{opacity:.5}}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th{color:var(--sub);text-align:left;padding:6px 8px;font-weight:500;border-bottom:1px solid var(--line)}
+td{padding:7px 8px;border-bottom:1px solid rgba(31,51,84,.5)}
+.tag{padding:2px 9px;border-radius:10px;font-size:11px}
+.t-cache{background:rgba(52,211,153,.15);color:var(--ok)}
+.t-faq{background:rgba(212,168,67,.15);color:var(--gold)}
+.t-rag{background:rgba(59,130,246,.15);color:#60a5fa}
+</style>
+</head>
+<body>
+<div class="hd">
+  <h1>衡<b>鉴</b> · 运维监控中心</h1>
+  <span style="font-size:12px;color:var(--sub)" id="clock"></span>
+  <div class="nav"><a href="/">⚖️ 依据检索</a><a href="/static/tests.html">🧪 质量报告</a><a href="/static/presentation.html">🎬 项目展示</a><a href="http://localhost:3000" target="_blank">📈 Grafana</a></div>
+</div>
+
+<div class="kpis">
+  <div class="kpi b"><div class="v" id="kTotal">0</div><div class="l">累计请求数</div></div>
+  <div class="kpi g"><div class="v" id="kSaved">0%</div><div class="l">LLM调用节省率</div></div>
+  <div class="kpi g"><div class="v" id="kCache">0%</div><div class="l">缓存命中率</div></div>
+  <div class="kpi y"><div class="v" id="kFaq">0%</div><div class="l">FAQ分流率</div></div>
+  <div class="kpi b"><div class="v" id="kP95">0<span style="font-size:13px">ms</span></div><div class="l">P95 延迟</div></div>
+  <div class="kpi g"><div class="v" id="kUp">--</div><div class="l">服务运行时长</div></div>
+</div>
+
+<div class="row">
+  <div class="card"><h3>请求延迟趋势（实时）</h3><div class="chart" id="latChart"></div></div>
+  <div class="card"><h3>组件健康状态</h3>
+    <div class="hstat" id="comps"></div>
+    <div style="margin-top:14px;font-size:11px;color:var(--sub)">健康检查接口 GET /health · 5s轮询 · Prometheus每15s抓取 /metrics</div>
+  </div>
+</div>
+
+<div class="row2">
+  <div class="card"><h3>三层流量漏斗分布</h3><div class="chart" id="funnelChart"></div></div>
+  <div class="card"><h3>RAG检索策略分布</h3><div class="chart" id="stratChart"></div></div>
+  <div class="card"><h3>最近请求流水</h3>
+    <table><thead><tr><th>时间</th><th>问题</th><th>链路</th><th>延迟</th></tr></thead><tbody id="recentBody"></tbody></table>
+  </div>
+</div>
+
+<script>
+const dark={textStyle:{color:'#7d93b5'},backgroundColor:'transparent'};
+const latC=echarts.init(document.getElementById('latChart'),null,{renderer:'canvas'});
+const funC=echarts.init(document.getElementById('funnelChart'));
+const strC=echarts.init(document.getElementById('stratChart'));
+let latData=[],timeData=[];
+
+latC.setOption({...dark,grid:{left:45,right:15,top:15,bottom:25},
+  xAxis:{type:'category',data:timeData,axisLine:{lineStyle:{color:'#1f3354'}}},
+  yAxis:{type:'value',name:'ms',splitLine:{lineStyle:{color:'#16233c'}}},
+  series:[{type:'line',data:latData,smooth:true,symbol:'none',lineStyle:{color:'#3b82f6',width:2},
+    areaStyle:{color:{type:'linear',x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:'rgba(59,130,246,.35)'},{offset:1,color:'rgba(59,130,246,0)'}]}}}]});
+
+function renderFunnel(s){
+  funC.setOption({...dark,series:[{type:'funnel',left:'8%',width:'84%',top:8,bottom:8,gap:4,
+    label:{color:'#dce7f5',formatter:'{b}\n{c} 次'},itemStyle:{borderWidth:0},
+    data:[{value:s.total,name:'全部请求',itemStyle:{color:'#3b82f6'}},
+          {value:s.total-s.cache_hits,name:'穿透缓存',itemStyle:{color:'#d4a843'}},
+          {value:s.rag_calls,name:'进入RAG(消耗LLM)',itemStyle:{color:'#ef4444'}}]}]});
+}
+function renderStrat(s){
+  const nm={direct:'直接检索',hyde:'HyDE',decompose:'子问题拆分',stepback:'回溯简化'};
+  strC.setOption({...dark,series:[{type:'pie',radius:['45%','72%'],
+    label:{color:'#7d93b5',fontSize:11},itemStyle:{borderColor:'#111c30',borderWidth:2},
+    data:Object.entries(s.strategy_count).map(([k,v],i)=>({name:nm[k],value:v,
+      itemStyle:{color:['#3b82f6','#34d399','#d4a843','#a78bfa'][i]}}))}]});
+}
+
+async function tick(){
+  document.getElementById('clock').textContent=new Date().toLocaleString('zh-CN');
+  try{
+    const s=await(await fetch('/api/metrics/business')).json();
+    kTotal.textContent=s.total; kSaved.textContent=s.llm_saved_rate+'%';
+    kCache.textContent=s.cache_rate+'%'; kFaq.textContent=s.faq_rate+'%';
+    kP95.innerHTML=s.p95_ms+'<span style="font-size:13px">ms</span>';
+    timeData.push(new Date().toLocaleTimeString('zh-CN',{hour12:false}));
+    latData.push(s.p95_ms);
+    if(latData.length>40){latData.shift();timeData.shift();}
+    latC.setOption({xAxis:{data:timeData},series:[{data:latData}]});
+    renderFunnel(s); renderStrat(s);
+    recentBody.innerHTML=(s.recent||[]).slice(0,9).map(r=>
+      `<tr><td>${r.ts}</td><td>${r.query}</td><td><span class="tag t-${r.route}">${{cache:'缓存',faq:'FAQ',rag:'RAG'}[r.route]}</span></td><td>${r.latency_ms}ms</td></tr>`).join('');
+    const h=await(await fetch('/health')).json();
+    kUp.textContent=h.uptime_s>3600?(h.uptime_s/3600).toFixed(1)+'h':Math.round(h.uptime_s/60)+'m';
+    comps.innerHTML=Object.entries(h.components).map(([k,v])=>
+      `<div class="comp ${v==='up'?'':'down'}"><span class="led"></span>${{index:'混合检索索引',cache:'查询缓存 (Redis)',faq:'FAQ匹配引擎',pipeline:'RAG管线'}[k]||k}<span class="ms">${v.toUpperCase()}</span></div>`).join('');
+  }catch(e){
+    comps.innerHTML='<div class="comp down"><span class="led"></span>API服务<span class="ms">DOWN</span></div>';
+  }
+}
+tick(); setInterval(tick,3000);
+window.onresize=()=>{latC.resize();funC.resize();strC.resize();};
+</script>
+</body>
+</html>

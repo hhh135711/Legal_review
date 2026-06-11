@@ -1,0 +1,19 @@
+{
+  "eval_size": 30,
+  "modes": {
+    "sparse": {
+      "recall_at_3": 93.3,
+      "mrr": 0.917
+    },
+    "dense": {
+      "recall_at_3": 90.0,
+      "mrr": 0.883
+    },
+    "hybrid": {
+      "recall_at_3": 96.7,
+      "mrr": 0.928
+    }
+  },
+  "ran_at": "2026-06-11 09:31:59",
+  "duration_s": 0.98
+}

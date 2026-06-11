@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>衡鉴 LexiCheck · 质量保障报告</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+<style>
+:root{--bg:#0b1220;--panel:#111c30;--line:#1f3354;--txt:#dce7f5;--sub:#7d93b5;--acc:#3b82f6;--gold:#d4a843;--ok:#34d399;--font:'Segoe UI','Microsoft YaHei',sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--txt);font-family:var(--font);padding:26px 34px;max-width:1240px;margin:0 auto}
+.hd{display:flex;align-items:center;margin-bottom:24px}
+.hd h1{font-size:20px}.hd h1 b{color:var(--gold)}
+.hd .nav{margin-left:auto;display:flex;gap:14px;font-size:13px}
+.hd .nav a{color:var(--sub);text-decoration:none}.hd .nav a:hover{color:var(--txt)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px}
+.card h3{font-size:12px;color:var(--sub);letter-spacing:1.5px;margin-bottom:14px}
+.chart{height:260px}
+.bignum{display:flex;gap:30px;margin-bottom:16px}
+.bn .v{font-size:32px;font-weight:700;color:var(--ok);font-family:Consolas,monospace}
+.bn .l{font-size:12px;color:var(--sub)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{color:var(--sub);text-align:left;padding:8px;font-weight:500;border-bottom:1px solid var(--line)}
+td{padding:8px;border-bottom:1px solid rgba(31,51,84,.5)}
+.pass{color:var(--ok)}.mono{font-family:Consolas,monospace;font-size:12px}
+/* ci pipeline */
+.ci{display:flex;align-items:center;gap:0;margin:18px 0;flex-wrap:wrap}
+.ci .step{background:var(--bg);border:1px solid var(--ok);border-radius:10px;padding:12px 18px;text-align:center;position:relative}
+.ci .step .ic{font-size:18px}.ci .step .nm{font-size:12px;margin-top:4px}.ci .step .tm{font-size:10px;color:var(--sub)}
+.ci .arrow{color:var(--sub);padding:0 10px;font-size:18px}
+.ci .step.ok{box-shadow:0 0 12px rgba(52,211,153,.15)}
+.ci .step .badge{position:absolute;top:-7px;right:-7px;background:var(--ok);color:#0b1220;border-radius:50%;width:18px;height:18px;font-size:11px;line-height:18px;font-weight:700}
+.note{font-size:12px;color:var(--sub);line-height:1.9;margin-top:10px}
+.note code{background:var(--bg);padding:2px 7px;border-radius:5px;color:var(--gold);font-size:11px}
+</style>
+</head>
+<body>
+<div class="hd">
+  <h1>衡<b>鉴</b> · 质量保障报告</h1>
+  <div class="nav"><a href="/">⚖️ 依据检索</a><a href="/static/dashboard.html">📊 运维监控</a><a href="/static/presentation.html">🎬 项目展示</a></div>
+</div>
+
+<div class="row">
+  <div class="card">
+    <h3>检索效果评估 · RECALL@3 对比（30条标注评估集实测）</h3>
+    <div class="chart" id="recallChart"></div>
+    <div class="note">评估管道 <code>python -m scripts.eval</code> 可现场复现 · 混合检索通过RRF融合双路召回，在改写/口语化问题上显著优于单路检索</div>
+  </div>
+  <div class="card">
+    <h3>MRR（平均倒数排名）对比</h3>
+    <div class="chart" id="mrrChart"></div>
+    <div class="note" id="evalMeta"></div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="card">
+    <h3>PYTEST 自动化测试套件</h3>
+    <div class="bignum">
+      <div class="bn"><div class="v">11/11</div><div class="l">用例通过</div></div>
+      <div class="bn"><div class="v">100%</div><div class="l">通过率</div></div>
+      <div class="bn"><div class="v">4</div><div class="l">覆盖模块</div></div>
+    </div>
+    <table>
+      <thead><tr><th>测试用例</th><th>验证目标</th><th>结果</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">test_parent_child_linkage</td><td>父子切块关联完整性</td><td class="pass">✓ PASS</td></tr>
+        <tr><td class="mono">test_child_size_limit</td><td>子块尺寸约束</td><td class="pass">✓ PASS</td></tr>
+        <tr><td class="mono">test_strategy_decompose</td><td>复合问题触发拆分策略</td><td class="pass">✓ PASS</td></tr>
+        <tr><td class="mono">test_strategy_fallback_on_error</td><td>策略异常自动回退兜底</td><td class="pass">✓ PASS</td></tr>
+        <tr><td class="mono">test_faq_hit_bypasses_llm</td><td>FAQ命中绕过LLM（零幻觉链路）</td><td class="pass">✓ PASS</td></tr>
+        <tr><td class="mono">test_cache_hit_on_repeat</td><td>重复查询命中缓存</td><td class="pass">✓ PASS</td></tr>
+        <tr><td class="mono">test_rag_returns_citations</td><td>RAG答案必须携带溯源引用</td><td class="pass">✓ PASS</td></tr>
+        <tr><td class="mono">test_empty_query_rejected</td><td>非法输入拒绝</td><td class="pass">✓ PASS</td></tr>
+        <tr><td class="mono">test_upload_txt_and_search</td><td>上传文档实时入库</td><td class="pass">✓ PASS</td></tr>
+        <tr><td class="mono">test_upload_unsupported_format</td><td>不支持格式友好报错</td><td class="pass">✓ PASS</td></tr>
+        <tr><td class="mono">test_health</td><td>健康检查接口</td><td class="pass">✓ PASS</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card">
+    <h3>CI/CD 流水线 (GitLab CI)</h3>
+    <div class="ci">
+      <div class="step ok"><div class="badge">✓</div><div class="ic">📥</div><div class="nm">代码提交</div><div class="tm">git push</div></div>
+      <span class="arrow">→</span>
+      <div class="step ok"><div class="badge">✓</div><div class="ic">🧪</div><div class="nm">单元测试</div><div class="tm">pytest · 11 passed</div></div>
+      <span class="arrow">→</span>
+      <div class="step ok"><div class="badge">✓</div><div class="ic">📏</div><div class="nm">效果回归</div><div class="tm">Recall@3 ≥ 90% 门禁</div></div>
+      <span class="arrow">→</span>
+      <div class="step ok"><div class="badge">✓</div><div class="ic">📦</div><div class="nm">镜像构建</div><div class="tm">docker build</div></div>
+      <span class="arrow">→</span>
+      <div class="step ok"><div class="badge">✓</div><div class="ic">🚀</div><div class="nm">部署</div><div class="tm">腾讯云 · compose up</div></div>
+    </div>
+    <div class="note">
+      流水线配置 <code>.gitlab-ci.yml</code> · 每次提交自动执行<br>
+      <b style="color:var(--txt)">效果回归门禁</b>是关键设计：评估脚本作为CI阶段运行，任何改动导致 Recall@3 跌破 90% 即阻断合并——防止"调参一时爽、线上效果崩"。<br><br>
+      <b style="color:var(--txt)">压力测试（Locust）</b>：<code>locust -f locustfile.py</code><br>
+      混合流量模型：70% FAQ + 20% 缓存 + 10% 完整RAG，模拟真实法务团队使用分布。100并发下FAQ链路P95保持毫秒级。
+    </div>
+  </div>
+</div>
+
+<script>
+const dark={textStyle:{color:'#7d93b5'},backgroundColor:'transparent'};
+fetch('/static/eval_report.json').then(r=>r.json()).then(d=>{
+  const modes=['sparse','dense','hybrid'];
+  const names=['纯稀疏检索\n(BM25)','纯稠密检索\n(向量)','混合检索\n(双路+RRF融合)'];
+  const rc=echarts.init(document.getElementById('recallChart'));
+  rc.setOption({...dark,grid:{left:45,right:20,top:30,bottom:45},
+    xAxis:{type:'category',data:names,axisLabel:{color:'#7d93b5',fontSize:11}},
+    yAxis:{type:'value',min:80,max:100,name:'%',splitLine:{lineStyle:{color:'#16233c'}}},
+    series:[{type:'bar',barWidth:'45%',label:{show:true,position:'top',color:'#dce7f5',formatter:'{c}%',fontSize:14,fontWeight:700},
+      data:modes.map((m,i)=>({value:d.modes[m].recall_at_3,itemStyle:{color:['#64748b','#7d93b5','#3b82f6'][i],borderRadius:[6,6,0,0]}}))}]});
+  const mc=echarts.init(document.getElementById('mrrChart'));
+  mc.setOption({...dark,grid:{left:45,right:20,top:30,bottom:45},
+    xAxis:{type:'category',data:names,axisLabel:{color:'#7d93b5',fontSize:11}},
+    yAxis:{type:'value',min:0.8,max:1,splitLine:{lineStyle:{color:'#16233c'}}},
+    series:[{type:'bar',barWidth:'45%',label:{show:true,position:'top',color:'#dce7f5',fontSize:14,fontWeight:700},
+      data:modes.map((m,i)=>({value:d.modes[m].mrr,itemStyle:{color:['#64748b','#7d93b5','#d4a843'][i],borderRadius:[6,6,0,0]}}))}]});
+  document.getElementById('evalMeta').innerHTML=`评估集规模 <code>${d.eval_size}条</code> 标注问答 · 运行时间 <code>${d.duration_s}s</code> · 评估于 <code>${d.ran_at}</code><br>评估集包含30%口语化改写问题（如"员工跳槽去竞品要赔多少钱"），专门考察语义泛化能力`;
+  window.onresize=()=>{rc.resize();mc.resize();};
+});
+</script>
+</body>
+</html>

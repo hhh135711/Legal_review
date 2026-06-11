@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>衡鉴 LexiCheck · 企业法务可溯源依据检索系统</title>
+<style>
+:root{
+  --bg:#0b1220; --panel:#111c30; --panel2:#162540; --line:#1f3354;
+  --txt:#dce7f5; --sub:#7d93b5; --acc:#3b82f6; --acc2:#60a5fa;
+  --gold:#d4a843; --ok:#34d399; --warn:#fbbf24; --font:'Segoe UI','Microsoft YaHei',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--txt);font-family:var(--font);min-height:100vh}
+a{color:var(--acc2);text-decoration:none}
+/* layout */
+.app{display:flex;min-height:100vh}
+.side{width:230px;background:var(--panel);border-right:1px solid var(--line);padding:24px 0;flex-shrink:0;display:flex;flex-direction:column}
+.logo{padding:0 22px 22px;border-bottom:1px solid var(--line)}
+.logo h1{font-size:21px;letter-spacing:2px}
+.logo h1 b{color:var(--gold)}
+.logo p{font-size:11px;color:var(--sub);margin-top:5px;letter-spacing:1px}
+.nav{margin-top:18px}
+.nav a{display:flex;align-items:center;gap:10px;padding:12px 22px;color:var(--sub);font-size:14px;border-left:3px solid transparent}
+.nav a.on,.nav a:hover{color:var(--txt);background:rgba(59,130,246,.08);border-left-color:var(--acc)}
+.side .stat{margin-top:auto;padding:16px 22px;border-top:1px solid var(--line);font-size:12px;color:var(--sub);line-height:2}
+.side .stat b{color:var(--ok)}
+.main{flex:1;padding:28px 36px;max-width:1180px}
+.hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}
+.hd h2{font-size:19px;font-weight:600}
+.hd .badge{font-size:12px;color:var(--sub);background:var(--panel);border:1px solid var(--line);padding:5px 12px;border-radius:20px}
+.hd .badge i{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--ok);margin-right:6px;animation:pulse 2s infinite}
+@keyframes pulse{50%{opacity:.4}}
+/* query box */
+.qbox{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;gap:12px}
+.qbox input{flex:1;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:13px 16px;color:var(--txt);font-size:15px;outline:none;font-family:var(--font)}
+.qbox input:focus{border-color:var(--acc)}
+.qbox button{background:linear-gradient(135deg,var(--acc),#2563eb);color:#fff;border:none;border-radius:10px;padding:0 30px;font-size:15px;cursor:pointer;font-family:var(--font)}
+.qbox button:disabled{opacity:.5;cursor:wait}
+.chips{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap}
+.chip{font-size:12px;color:var(--sub);border:1px solid var(--line);border-radius:16px;padding:5px 13px;cursor:pointer;transition:.2s}
+.chip:hover{color:var(--acc2);border-color:var(--acc)}
+/* grid */
+.grid{display:grid;grid-template-columns:320px 1fr;gap:20px;margin-top:20px;align-items:start}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px}
+.card h3{font-size:13px;color:var(--sub);letter-spacing:1.5px;margin-bottom:16px;text-transform:uppercase}
+/* pipeline trace */
+.stage{display:flex;gap:12px;padding:11px 0;opacity:.25;transition:opacity .4s;border-bottom:1px dashed var(--line)}
+.stage:last-child{border-bottom:none}
+.stage.lit{opacity:1}
+.stage .dot{width:26px;height:26px;border-radius:50%;background:var(--panel2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;color:var(--sub)}
+.stage.lit .dot{background:var(--acc);border-color:var(--acc);color:#fff;box-shadow:0 0 12px rgba(59,130,246,.5)}
+.stage.skip .dot{background:var(--panel2)}
+.stage .nm{font-size:13px;font-weight:600}
+.stage .dt{font-size:11.5px;color:var(--sub);margin-top:3px;line-height:1.5}
+.stage .ms{margin-left:auto;font-size:11px;color:var(--gold);flex-shrink:0;font-family:Consolas,monospace}
+.route-tag{display:inline-block;font-size:11px;padding:3px 10px;border-radius:12px;margin-bottom:14px}
+.route-cache{background:rgba(52,211,153,.15);color:var(--ok)}
+.route-faq{background:rgba(212,168,67,.15);color:var(--gold)}
+.route-rag{background:rgba(59,130,246,.15);color:var(--acc2)}
+/* answer */
+.ans{font-size:14.5px;line-height:1.9;white-space:pre-wrap}
+.ans sup{color:var(--acc2);cursor:pointer;font-weight:700;padding:0 2px}
+.cites{margin-top:18px;border-top:1px solid var(--line);padding-top:14px}
+.cite{display:flex;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;margin-bottom:8px;cursor:pointer;transition:.2s;font-size:13px}
+.cite:hover{border-color:var(--acc);background:rgba(59,130,246,.06)}
+.cite .no{color:var(--gold);font-weight:700;flex-shrink:0}
+.cite .doc{color:var(--acc2);flex-shrink:0;max-width:230px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cite .sn{color:var(--sub);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cite .sc{margin-left:auto;color:var(--sub);font-family:Consolas,monospace;font-size:11px;flex-shrink:0}
+.meta-line{font-size:12px;color:var(--sub);margin-top:14px;display:flex;gap:18px}
+.meta-line b{color:var(--txt)}
+/* modal */
+.mask{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:50}
+.mask.show{display:flex}
+.modal{background:var(--panel);border:1px solid var(--line);border-radius:16px;max-width:680px;width:90%;max-height:80vh;overflow:auto;padding:28px}
+.modal h4{color:var(--gold);margin-bottom:6px;font-size:15px}
+.modal .src{font-size:12px;color:var(--sub);margin-bottom:16px}
+.modal .body{font-size:14px;line-height:2;white-space:pre-wrap}
+.modal mark{background:rgba(212,168,67,.3);color:var(--gold);padding:1px 2px;border-radius:3px}
+.modal .close{float:right;cursor:pointer;color:var(--sub);font-size:20px}
+/* upload */
+.up{border:2px dashed var(--line);border-radius:12px;padding:22px;text-align:center;color:var(--sub);font-size:13px;cursor:pointer;transition:.2s;margin-bottom:12px}
+.up:hover,.up.drag{border-color:var(--acc);color:var(--acc2)}
+.up-log{font-size:12px;line-height:2;color:var(--sub)}
+.up-log b{color:var(--ok)}
+.empty{color:var(--sub);text-align:center;padding:48px 0;font-size:14px}
+.spinner{width:36px;height:36px;border:3px solid var(--line);border-top-color:var(--acc);border-radius:50%;margin:0 auto 14px;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="logo"><h1>衡<b>鉴</b> LexiCheck</h1><p>企业法务可溯源依据检索系统</p></div>
+    <nav class="nav">
+      <a class="on" href="/">⚖️ 依据检索</a>
+      <a href="/static/dashboard.html">📊 运维监控</a>
+      <a href="/static/tests.html">🧪 质量报告</a>
+      <a href="/static/presentation.html">🎬 项目展示</a>
+    </nav>
+    <div class="stat" id="corpusStat">知识库加载中…</div>
+  </aside>
+
+  <main class="main">
+    <div class="hd">
+      <h2>法务依据检索工作台</h2>
+      <span class="badge" id="healthBadge"><i></i>系统在线</span>
+    </div>
+
+    <div class="qbox">
+      <input id="q" placeholder="输入法务问题，例如：对赌协议里哪些条款碰过我们的红线？" onkeydown="if(event.key==='Enter')ask()">
+      <button id="btn" onclick="ask()">检索依据</button>
+    </div>
+    <div class="chips">
+      <span class="chip" onclick="fill('竞业限制期限最长多久')">竞业限制期限最长多久</span>
+      <span class="chip" onclick="fill('对赌协议的回购利率上限是多少，以及业绩补偿有没有封顶要求')">对赌回购利率和补偿封顶（复合问题）</span>
+      <span class="chip" onclick="fill('供应商破产源代码拿不到怎么办')">供应商破产风险</span>
+      <span class="chip" onclick="fill('2023年试用期解除的案例是什么情况')">2023年试用期案例（细节问题）</span>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h3>检索链路实时追踪</h3>
+        <div id="trace"><div class="empty">等待查询…</div></div>
+      </div>
+
+      <div>
+        <div class="card" id="ansCard">
+          <h3>结论与依据来源</h3>
+          <div id="answer"><div class="empty">提交问题后，系统将返回「模型结论 + 依据来源」，<br>每条结论均可点击引用编号溯源至原始条款。</div></div>
+        </div>
+
+        <div class="card" style="margin-top:20px">
+          <h3>文档接入 · 多格式实时入库</h3>
+          <div class="up" id="upZone" onclick="document.getElementById('file').click()">
+            📄 点击或拖拽上传文档（txt / md / docx / pdf）<br>
+            <span style="font-size:11px">解析 → 父子切块 → 向量化 → 入库，全程秒级，立即可检索</span>
+          </div>
+          <input type="file" id="file" hidden onchange="upload(this.files[0])">
+          <div class="up-log" id="upLog"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="mask" id="mask" onclick="if(event.target===this)this.classList.remove('show')">
+  <div class="modal">
+    <span class="close" onclick="document.getElementById('mask').classList.remove('show')">✕</span>
+    <h4 id="mTitle"></h4><div class="src" id="mSrc"></div><div class="body" id="mBody"></div>
+  </div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+let lastCites=[];
+
+function fill(t){$('q').value=t;ask();}
+
+async function ask(){
+  const q=$('q').value.trim(); if(!q)return;
+  $('btn').disabled=true;
+  $('trace').innerHTML='';
+  $('answer').innerHTML='<div class="empty"><div class="spinner"></div>检索中…</div>';
+  try{
+    const r=await fetch('/api/query',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({query:q})});
+    const d=await r.json();
+    await playTrace(d);
+    renderAnswer(d);
+    refreshCorpus();
+  }catch(e){$('answer').innerHTML='<div class="empty">请求失败：'+e.message+'</div>';}
+  $('btn').disabled=false;
+}
+
+const ALL_STAGES=['缓存检查','FAQ匹配 (BM25+Softmax)','策略路由','混合检索 (稀疏+稠密双路召回)','Reranker 精排','约束生成 (结论+溯源引用)'];
+async function playTrace(d){
+  const box=$('trace');
+  const tagCls={cache:'route-cache',faq:'route-faq',rag:'route-rag'};
+  const tagTxt={cache:'⚡ L1 缓存直返 · 零LLM成本',faq:'🎯 L2 FAQ标准答案 · 零幻觉',rag:'🔍 L3 完整RAG链路'};
+  box.innerHTML=`<span class="route-tag ${tagCls[d.route]}">${tagTxt[d.route]}</span>`;
+  // 渲染全部阶段（未走到的灰显），逐个点亮实际trace
+  const traceMap={}; d.trace.forEach(t=>traceMap[t.stage]=t);
+  const lit=[];
+  ALL_STAGES.forEach((nm,i)=>{
+    const hit=d.trace.find(t=>t.stage===nm||t.stage.startsWith(nm.split(' ')[0]));
+    const el=document.createElement('div');
+    el.className='stage';
+    el.innerHTML=`<div class="dot">${i+1}</div><div style="flex:1"><div class="nm">${hit?hit.stage:nm}</div><div class="dt">${hit?hit.detail:'— 已被前置层拦截，未执行'}</div></div>${hit?`<div class="ms">${hit.ms}ms</div>`:''}`;
+    box.appendChild(el);
+    if(hit)lit.push(el);
+  });
+  for(const el of lit){await new Promise(r=>setTimeout(r,260));el.classList.add('lit');}
+  const total=document.createElement('div');
+  total.style.cssText='margin-top:14px;font-size:12px;color:var(--sub);text-align:right';
+  total.innerHTML=`端到端延迟 <b style="color:var(--gold);font-size:15px">${d.latency_ms} ms</b>`;
+  box.appendChild(total);
+}
+
+function renderAnswer(d){
+  lastCites=d.citations||[];
+  let html='';
+  if(d.matched_q)html+=`<div style="font-size:12px;color:var(--sub);margin-bottom:10px">匹配标准问题：「${d.matched_q}」</div>`;
+  if(d.sub_queries&&d.sub_queries.length>1)html+=`<div style="font-size:12px;color:var(--warn);margin-bottom:10px">⑂ 已拆分为 ${d.sub_queries.length} 个子问题：${d.sub_queries.map(s=>`「${s}」`).join(' ')}</div>`;
+  html+=`<div class="ans">${d.answer.replace(/［(\d+)］/g,'<sup onclick="openCite($1)">[$1]</sup>')}</div>`;
+  if(lastCites.length){
+    html+='<div class="cites"><h3 style="font-size:12px;color:var(--sub);margin-bottom:10px">依据来源（点击查看原文）</h3>';
+    lastCites.forEach(c=>{html+=`<div class="cite" onclick="openCite(${c.id})"><span class="no">[${c.id}]</span><span class="doc">${c.doc}</span><span class="sn">${c.snippet}</span><span class="sc">score ${c.score}</span></div>`;});
+    html+='</div>';
+  }
+  html+=`<div class="meta-line"><span>链路：<b>${{cache:'缓存',faq:'FAQ',rag:'RAG'}[d.route]}</b></span>${d.strategy?`<span>策略：<b>${{direct:'直接检索',hyde:'HyDE',decompose:'子问题拆分',stepback:'回溯简化'}[d.strategy]}</b></span>`:''}<span>延迟：<b>${d.latency_ms}ms</b></span></div>`;
+  $('answer').innerHTML=html;
+}
+
+function openCite(id){
+  const c=lastCites.find(x=>x.id===id); if(!c)return;
+  $('mTitle').textContent='原始条款溯源 · 引用['+id+']';
+  $('mSrc').textContent='来源文档：'+c.doc+'  ·  相关性得分 '+c.score;
+  const esc=t=>t.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+  let body=esc(c.full_text);
+  if(c.snippet&&c.full_text.includes(c.snippet))body=body.replace(esc(c.snippet),'<mark>'+esc(c.snippet)+'</mark>');
+  $('mBody').innerHTML=body;
+  $('mask').classList.add('show');
+}
+
+async function upload(f){
+  if(!f)return;
+  $('upLog').innerHTML='⏳ 解析中：'+f.name;
+  const fd=new FormData(); fd.append('file',f);
+  const r=await fetch('/api/upload',{method:'POST',body:fd});
+  const d=await r.json();
+  if(r.ok){
+    $('upLog').innerHTML=`<b>✓ ${d.filename}</b> · 解析通道:${d.channel} · ${d.chars}字 → 父块×${d.parents} 子块×${d.children} · 已入库，立即可检索`;
+    refreshCorpus();
+  }else{$('upLog').innerHTML='✕ '+(d.detail||'解析失败');}
+}
+const zone=$('upZone');
+zone.ondragover=e=>{e.preventDefault();zone.classList.add('drag');};
+zone.ondragleave=()=>zone.classList.remove('drag');
+zone.ondrop=e=>{e.preventDefault();zone.classList.remove('drag');upload(e.dataTransfer.files[0]);};
+
+async function refreshCorpus(){
+  const d=await(await fetch('/api/corpus')).json();
+  $('corpusStat').innerHTML=`知识库文档 <b>${d.docs.length}</b> 篇<br>父块 <b>${d.parents}</b> · 子块 <b>${d.children}</b><br>FAQ标准问答 <b>${d.faq_count}</b> 条`;
+}
+refreshCorpus();
+setInterval(async()=>{try{const h=await(await fetch('/health')).json();$('healthBadge').innerHTML=h.status==='ok'?'<i></i>系统在线':'<i style="background:#ef4444"></i>异常';}catch{$('healthBadge').innerHTML='<i style="background:#ef4444"></i>离线';}},5000);
+</script>
+</body>
+</html>

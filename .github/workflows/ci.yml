@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  unit-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - name: Run pytest
+        run: python -m pytest tests -v
+
+  retrieval-regression:
+    # 效果回归门禁：Recall@3 跌破90%即阻断
+    runs-on: ubuntu-latest
+    needs: unit-test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - name: Eval quality gate
+        run: |
+          python -m scripts.eval
+          python -c "import json;r=json.load(open('static/eval_report.json',encoding='utf-8'));s=r['modes']['hybrid']['recall_at_3'];print(f'Hybrid Recall@3={s}%');assert s>=90,'效果回归未达标，阻断合并'"
+
+  build-image:
+    runs-on: ubuntu-latest
+    needs: retrieval-regression
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Docker image
+        run: docker build -t lexicheck:${{ github.sha }} .

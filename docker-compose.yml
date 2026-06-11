@@ -1,0 +1,29 @@
+services:
+  lexicheck:
+    build: .
+    container_name: lexicheck
+    ports:
+      - "80:8000"
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:v2.53.0
+    container_name: prometheus
+    volumes:
+      - ./deploy/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090"
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:11.1.0
+    container_name: grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=lexicheck2026
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
+    volumes:
+      - ./deploy/grafana-datasource.yml:/etc/grafana/provisioning/datasources/ds.yml:ro
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
