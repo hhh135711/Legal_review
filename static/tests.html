@@ -6,7 +6,7 @@
 <title>衡鉴 LexiCheck · 质量保障报告</title>
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
 <style>
-:root{--bg:#0b1220;--panel:#111c30;--line:#1f3354;--txt:#dce7f5;--sub:#7d93b5;--acc:#3b82f6;--gold:#d4a843;--ok:#34d399;--font:'Segoe UI','Microsoft YaHei',sans-serif}
+:root{--bg:#f4f1ea;--panel:#ffffff;--line:#ddd6c6;--txt:#1c2733;--sub:#5d6877;--acc:#1f4e79;--gold:#9a7b2d;--ok:#1e7a4c;--font:'Segoe UI','Microsoft YaHei',sans-serif}
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:var(--bg);color:var(--txt);font-family:var(--font);padding:26px 34px;max-width:1240px;margin:0 auto}
 .hd{display:flex;align-items:center;margin-bottom:24px}
@@ -32,7 +32,10 @@ td{padding:8px;border-bottom:1px solid rgba(31,51,84,.5)}
 .ci .step.ok{box-shadow:0 0 12px rgba(52,211,153,.15)}
 .ci .step .badge{position:absolute;top:-7px;right:-7px;background:var(--ok);color:#0b1220;border-radius:50%;width:18px;height:18px;font-size:11px;line-height:18px;font-weight:700}
 .note{font-size:12px;color:var(--sub);line-height:1.9;margin-top:10px}
-.note code{background:var(--bg);padding:2px 7px;border-radius:5px;color:var(--gold);font-size:11px}
+.note code{background:#f0ece1;padding:2px 7px;border-radius:5px;color:var(--gold);font-size:11px}
+.card{box-shadow:0 1px 4px rgba(28,39,51,.06)}
+.ci .step{background:#f7f9f6}
+.ci .step .badge{color:#fff}
 </style>
 </head>
 <body>
@@ -102,22 +105,22 @@ td{padding:8px;border-bottom:1px solid rgba(31,51,84,.5)}
 </div>
 
 <script>
-const dark={textStyle:{color:'#7d93b5'},backgroundColor:'transparent'};
+const dark={textStyle:{color:'#5d6877'},backgroundColor:'transparent'};
 fetch('/static/eval_report.json').then(r=>r.json()).then(d=>{
   const modes=['sparse','dense','hybrid'];
   const names=['纯稀疏检索\n(BM25)','纯稠密检索\n(向量)','混合检索\n(双路+RRF融合)'];
   const rc=echarts.init(document.getElementById('recallChart'));
   rc.setOption({...dark,grid:{left:45,right:20,top:30,bottom:45},
-    xAxis:{type:'category',data:names,axisLabel:{color:'#7d93b5',fontSize:11}},
-    yAxis:{type:'value',min:80,max:100,name:'%',splitLine:{lineStyle:{color:'#16233c'}}},
-    series:[{type:'bar',barWidth:'45%',label:{show:true,position:'top',color:'#dce7f5',formatter:'{c}%',fontSize:14,fontWeight:700},
-      data:modes.map((m,i)=>({value:d.modes[m].recall_at_3,itemStyle:{color:['#64748b','#7d93b5','#3b82f6'][i],borderRadius:[6,6,0,0]}}))}]});
+    xAxis:{type:'category',data:names,axisLabel:{color:'#5d6877',fontSize:11}},
+    yAxis:{type:'value',min:80,max:100,name:'%',splitLine:{lineStyle:{color:'#ece7db'}}},
+    series:[{type:'bar',barWidth:'45%',label:{show:true,position:'top',color:'#1c2733',formatter:'{c}%',fontSize:14,fontWeight:700},
+      data:modes.map((m,i)=>({value:d.modes[m].recall_at_3,itemStyle:{color:['#9aa6b5','#6b7d92','#1f4e79'][i],borderRadius:[6,6,0,0]}}))}]});
   const mc=echarts.init(document.getElementById('mrrChart'));
   mc.setOption({...dark,grid:{left:45,right:20,top:30,bottom:45},
-    xAxis:{type:'category',data:names,axisLabel:{color:'#7d93b5',fontSize:11}},
-    yAxis:{type:'value',min:0.8,max:1,splitLine:{lineStyle:{color:'#16233c'}}},
-    series:[{type:'bar',barWidth:'45%',label:{show:true,position:'top',color:'#dce7f5',fontSize:14,fontWeight:700},
-      data:modes.map((m,i)=>({value:d.modes[m].mrr,itemStyle:{color:['#64748b','#7d93b5','#d4a843'][i],borderRadius:[6,6,0,0]}}))}]});
+    xAxis:{type:'category',data:names,axisLabel:{color:'#5d6877',fontSize:11}},
+    yAxis:{type:'value',min:0.8,max:1,splitLine:{lineStyle:{color:'#ece7db'}}},
+    series:[{type:'bar',barWidth:'45%',label:{show:true,position:'top',color:'#1c2733',fontSize:14,fontWeight:700},
+      data:modes.map((m,i)=>({value:d.modes[m].mrr,itemStyle:{color:['#9aa6b5','#6b7d92','#9a7b2d'][i],borderRadius:[6,6,0,0]}}))}]});
   document.getElementById('evalMeta').innerHTML=`评估集规模 <code>${d.eval_size}条</code> 标注问答 · 运行时间 <code>${d.duration_s}s</code> · 评估于 <code>${d.ran_at}</code><br>评估集包含30%口语化改写问题（如"员工跳槽去竞品要赔多少钱"），专门考察语义泛化能力`;
   window.onresize=()=>{rc.resize();mc.resize();};
 });

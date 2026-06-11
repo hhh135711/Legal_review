@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>衡鉴 LexiCheck · 项目展示</title>
 <style>
-:root{--bg:#0b1220;--panel:#111c30;--panel2:#162540;--line:#1f3354;--txt:#dce7f5;--sub:#7d93b5;--acc:#3b82f6;--acc2:#60a5fa;--gold:#d4a843;--ok:#34d399;--bad:#ef4444;--font:'Segoe UI','Microsoft YaHei',sans-serif}
+:root{--bg:#f4f1ea;--panel:#ffffff;--panel2:#eef1f6;--line:#ddd6c6;--txt:#1c2733;--sub:#5d6877;--acc:#1f4e79;--acc2:#2e6da4;--gold:#9a7b2d;--ok:#1e7a4c;--bad:#b3402f;--font:'Segoe UI','Microsoft YaHei',sans-serif}
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--txt);font-family:var(--font);overflow-x:hidden}
@@ -20,7 +20,7 @@ p.lead{font-size:17px;color:var(--sub);line-height:2;max-width:760px}
 .dots a{width:10px;height:10px;border-radius:50%;background:var(--line);display:block;transition:.3s}
 .dots a.on{background:var(--gold);box-shadow:0 0 10px var(--gold)}
 /* hero */
-.hero{text-align:center;align-items:center;background:radial-gradient(ellipse 70% 50% at 50% 40%,rgba(59,130,246,.12),transparent)}
+.hero{text-align:center;align-items:center;background:radial-gradient(ellipse 70% 50% at 50% 40%,rgba(31,78,121,.07),transparent)}
 .hero .mark{font-size:70px;margin-bottom:8px}
 .hero h1{font-size:62px;letter-spacing:8px;font-weight:800}
 .hero h1 b{color:var(--gold)}
@@ -28,13 +28,13 @@ p.lead{font-size:17px;color:var(--sub);line-height:2;max-width:760px}
 .hero p{font-size:18px;color:var(--sub);max-width:640px;line-height:2}
 .hero .cta{margin-top:38px;display:flex;gap:16px}
 .btn{padding:14px 34px;border-radius:12px;font-size:15px;cursor:pointer;text-decoration:none;transition:.25s}
-.btn.pri{background:linear-gradient(135deg,var(--acc),#2563eb);color:#fff}
-.btn.pri:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(59,130,246,.35)}
+.btn.pri{background:linear-gradient(135deg,#1f4e79,#16395a);color:#fff}
+.btn.pri:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(31,78,121,.3)}
 .btn.sec2{border:1px solid var(--line);color:var(--sub)}
 .btn.sec2:hover{border-color:var(--gold);color:var(--gold)}
 .scroll-hint{position:absolute;bottom:34px;color:var(--sub);font-size:12px;animation:bob 2s infinite}
 .hero-strip{display:flex;gap:14px;margin-top:34px;flex-wrap:wrap;justify-content:center}
-.hs{background:rgba(17,28,48,.8);border:1px solid var(--line);border-radius:12px;padding:14px 22px;backdrop-filter:blur(6px)}
+.hs{background:rgba(255,255,255,.85);border:1px solid var(--line);border-radius:12px;padding:14px 22px;backdrop-filter:blur(6px);box-shadow:0 1px 5px rgba(28,39,51,.07)}
 .hs b{display:block;font-size:24px;color:var(--gold);font-family:Consolas,monospace}
 .hs span{font-size:11px;color:var(--sub)}
 /* versus */
@@ -44,9 +44,10 @@ p.lead{font-size:17px;color:var(--sub);line-height:2;max-width:760px}
 .vs-row>div{padding:16px 22px;font-size:14px}
 .vs-row.hdr>div{background:var(--panel2);font-size:13px;color:var(--sub);letter-spacing:1px}
 .vs-row .dim{color:var(--sub)}
-.vs-row .bad-cell{color:#f87171}
-.vs-row .good-cell{color:var(--ok);font-weight:600;background:rgba(52,211,153,.05)}
-.vs-row .hdr-them{color:#f87171!important}
+.vs-row .bad-cell{color:#b3402f}
+.vs-row .good-cell{color:var(--ok);font-weight:600;background:rgba(30,122,76,.05)}
+.vs-row .hdr-them{color:#b3402f!important}
+.vs-table{background:var(--panel);box-shadow:0 1px 5px rgba(28,39,51,.06)}
 .vs-row .hdr-us{color:var(--ok)!important;font-weight:700}
 @keyframes bob{50%{transform:translateY(8px)}}
 /* pain cards */
@@ -62,19 +63,20 @@ p.lead{font-size:17px;color:var(--sub);line-height:2;max-width:760px}
 .arch-wrap{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:26px;margin-top:26px}
 .arch-tip{text-align:center;font-size:12px;color:var(--sub);margin-top:10px}
 svg .blk{cursor:pointer;transition:.2s}
-svg .blk rect{fill:#162540;stroke:#1f3354;stroke-width:1.5;rx:10}
-svg .blk:hover rect,svg .blk.hl rect{stroke:#3b82f6;stroke-width:2.5;filter:drop-shadow(0 0 8px rgba(59,130,246,.5))}
-svg .blk text{fill:#dce7f5;font-size:13px;font-family:var(--font);text-anchor:middle;pointer-events:none}
-svg .blk .sub{fill:#7d93b5;font-size:10px}
-svg .flow{stroke:#3b82f6;stroke-width:2;fill:none;marker-end:url(#arr);stroke-dasharray:6 4;animation:dash 1.2s linear infinite}
+svg .blk rect{fill:#ffffff;stroke:#c9c1ae;stroke-width:1.5;rx:10}
+svg .blk:hover rect,svg .blk.hl rect{stroke:#1f4e79;stroke-width:2.5;filter:drop-shadow(0 0 6px rgba(31,78,121,.35))}
+svg .blk text{fill:#1c2733;font-size:13px;font-family:var(--font);text-anchor:middle;pointer-events:none}
+svg .blk .sub{fill:#5d6877;font-size:10px}
+svg .flow{stroke:#1f4e79;stroke-width:2;fill:none;marker-end:url(#arr);stroke-dasharray:6 4;animation:dash 1.2s linear infinite}
 @keyframes dash{to{stroke-dashoffset:-10}}
-svg .lbl{fill:#d4a843;font-size:10.5px;font-family:var(--font);text-anchor:middle}
+svg .lbl{fill:#9a7b2d;font-size:10.5px;font-family:var(--font);text-anchor:middle}
 .arch-desc{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin-top:16px;font-size:13.5px;color:var(--sub);line-height:1.9;min-height:74px}
 .arch-desc b{color:var(--gold)}
 /* tech highlights */
 .tech{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:32px}
 .tcard{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:26px;position:relative;overflow:hidden}
-.tcard::before{content:attr(data-n);position:absolute;right:18px;top:8px;font-size:60px;font-weight:800;color:rgba(59,130,246,.08)}
+.tcard::before{content:attr(data-n);position:absolute;right:18px;top:8px;font-size:60px;font-weight:800;color:rgba(31,78,121,.07)}
+.pcard,.tcard,.num,.estep,.arch-wrap{box-shadow:0 1px 5px rgba(28,39,51,.06)}
 .tcard h4{font-size:16px;margin-bottom:10px;color:var(--acc2)}
 .tcard p{font-size:13.5px;color:var(--sub);line-height:1.9}
 .tcard p b{color:var(--txt)}
@@ -91,6 +93,22 @@ svg .lbl{fill:#d4a843;font-size:10.5px;font-family:var(--font);text-anchor:middl
 .estep:hover{border-color:var(--ok)}
 .estep .ic{font-size:30px}.estep h5{font-size:14px;margin:10px 0 8px}
 .estep p{font-size:12px;color:var(--sub);line-height:1.8}
+/* tech stack */
+.stack{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:32px}
+.layer{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:0 1px 5px rgba(28,39,51,.06)}
+.layer h5{font-size:13px;color:var(--acc);letter-spacing:1px;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--gold)}
+.layer ul{list-style:none}
+.layer li{font-size:12.5px;color:var(--sub);padding:5px 0;line-height:1.6}
+.layer li b{color:var(--txt);display:block;font-size:13px}
+/* deliverables */
+.dlv{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:32px}
+.dcard{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 5px rgba(28,39,51,.06);transition:.25s}
+.dcard:hover{transform:translateY(-4px);border-color:var(--acc)}
+.dcard .tk{font-size:11px;color:var(--gold);letter-spacing:1px}
+.dcard h5{font-size:15px;margin:7px 0 8px}
+.dcard p{font-size:12.5px;color:var(--sub);line-height:1.8}
+.dcard .st{display:inline-block;margin-top:10px;font-size:11px;color:var(--ok);background:rgba(30,122,76,.08);padding:3px 10px;border-radius:10px}
+@media(max-width:900px){.stack,.dlv{grid-template-columns:1fr}}
 .final{text-align:center;align-items:center}
 .final blockquote{font-size:26px;line-height:1.9;max-width:820px;font-weight:300;color:var(--txt)}
 .final blockquote b{color:var(--gold);font-weight:700}
@@ -167,11 +185,11 @@ svg .lbl{fill:#d4a843;font-size:10.5px;font-family:var(--font);text-anchor:middl
         <path class="flow" d="M820,178 L858,178"/>
         <path class="flow" d="M700,270 Q680,240 700,206" />
         <!-- hit returns -->
-        <path class="flow" d="M235,148 Q235,60 75,60 Q40,60 40,148" style="stroke:#34d399"/>
-        <path class="flow" d="M400,148 Q400,30 75,30 Q20,30 20,148" style="stroke:#d4a843"/>
-        <text x="240" y="52" class="lbl" style="fill:#34d399">缓存命中 · 直接返回</text>
+        <path class="flow" d="M235,148 Q235,60 75,60 Q40,60 40,148" style="stroke:#1e7a4c"/>
+        <path class="flow" d="M400,148 Q400,30 75,30 Q20,30 20,148" style="stroke:#9a7b2d"/>
+        <text x="240" y="52" class="lbl" style="fill:#1e7a4c">缓存命中 · 直接返回</text>
         <text x="430" y="22" class="lbl">FAQ命中 · 零幻觉返回</text>
-        <text x="490" y="135" class="lbl" style="fill:#7d93b5">未命中才进入RAG ↓ 仅约50%流量消耗LLM</text>
+        <text x="490" y="135" class="lbl" style="fill:#5d6877">未命中才进入RAG ↓ 仅约50%流量消耗LLM</text>
       </svg>
       <div class="arch-tip">💡 鼠标悬停 / 点击各模块查看设计细节</div>
       <div class="arch-desc" id="archDesc">将鼠标移到架构图的任意模块上，这里会显示该模块的设计思路与技术细节。</div>
@@ -243,6 +261,55 @@ svg .lbl{fill:#d4a843;font-size:10.5px;font-family:var(--font);text-anchor:middl
       <div class="estep"><div class="ic">⚡</div><h5>压力测试</h5><p>Locust混合流量模型，100并发实测验证三层漏斗的抗压价值</p></div>
     </div>
     <div style="margin-top:30px;text-align:center"><a class="btn sec2" href="/static/tests.html" target="_blank">查看实测质量报告 →</a> <a class="btn sec2" href="/static/dashboard.html" target="_blank">查看实时监控 →</a></div>
+  </div>
+</section>
+
+<!-- 6.5 TECH STACK -->
+<section id="s5b">
+  <div class="reveal">
+    <h2 class="sec">06 · 技术栈全景</h2>
+    <h3 class="big">每一层的选型都有理由</h3>
+    <div class="stack">
+      <div class="layer"><h5>数据与解析层</h5><ul>
+        <li><b>pymupdf / python-docx</b>PDF与Word统一解析路由</li>
+        <li><b>PaddleOCR 通道</b>扫描件自动识别分流</li>
+        <li><b>父子切块引擎</b>1200/300 token 双粒度</li>
+      </ul></div>
+      <div class="layer"><h5>检索与生成层</h5><ul>
+        <li><b>BGE-M3</b>一个模型同出稠密+稀疏向量</li>
+        <li><b>Milvus</b>向量存储与召回</li>
+        <li><b>BM25 + RRF融合</b>双路召回加权排序</li>
+        <li><b>Reranker 精排</b>候选集二次精筛</li>
+      </ul></div>
+      <div class="layer"><h5>服务与缓存层</h5><ul>
+        <li><b>FastAPI</b>异步API框架，自带OpenAPI文档</li>
+        <li><b>Redis</b>L1查询缓存，毫秒级直返</li>
+        <li><b>策略路由器</b>4策略+异常兜底回退</li>
+      </ul></div>
+      <div class="layer"><h5>工程与运维层</h5><ul>
+        <li><b>pytest + 评估管道</b>质量与效果双保障</li>
+        <li><b>GitHub Actions</b>CI含效果回归门禁</li>
+        <li><b>Docker Compose</b>三容器一键编排</li>
+        <li><b>Prometheus + Grafana + Locust</b>监控与压测</li>
+      </ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- 6.8 DELIVERABLES -->
+<section id="s5c">
+  <div class="reveal">
+    <h2 class="sec">07 · 交付物清单</h2>
+    <h3 class="big">不是Demo，是可交付的产品</h3>
+    <p class="lead">以下每一项都已真实落地，公网可访问、代码可审计、数据可复现：</p>
+    <div class="dlv">
+      <div class="dcard"><div class="tk">SYSTEM</div><h5>在线检索系统</h5><p>四大功能页公网部署，同学现在扫码即可使用；支持现场上传文档秒级入库检索。</p><span class="st">✓ 云端运行中</span></div>
+      <div class="dcard"><div class="tk">CODE</div><h5>开源代码仓库</h5><p>GitHub完整工程：后端核心、前端页面、测试、评估、部署配置，32个文件全量开放。</p><span class="st">✓ github.com/hhh135711/Legal_review</span></div>
+      <div class="dcard"><div class="tk">QUALITY</div><h5>质量证据链</h5><p>11个自动化用例、30条标注评估集、CI绿色流水线、效果回归门禁——全部可现场复跑。</p><span class="st">✓ 11/11 通过 · Recall@3 96.7%</span></div>
+      <div class="dcard"><div class="tk">OPS</div><h5>监控体系</h5><p>Prometheus+Grafana系统监控与业务Dashboard双层监控，健康检查自动探活。</p><span class="st">✓ 三容器编排运行</span></div>
+      <div class="dcard"><div class="tk">PERF</div><h5>压测报告</h5><p>Locust混合流量模型（70%FAQ/20%缓存/10%RAG），100并发实测验证三层漏斗抗压能力。</p><span class="st">✓ FAQ链路毫秒级稳定</span></div>
+      <div class="dcard"><div class="tk">DOCS</div><h5>完整文档</h5><p>README含快速启动、架构说明、部署指引；本展示页本身也是交付物的一部分。</p><span class="st">✓ 开箱即用</span></div>
+    </div>
   </div>
 </section>
 

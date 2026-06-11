@@ -6,7 +6,7 @@
 <title>衡鉴 LexiCheck · 运维监控中心</title>
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
 <style>
-:root{--bg:#0b1220;--panel:#111c30;--line:#1f3354;--txt:#dce7f5;--sub:#7d93b5;--acc:#3b82f6;--gold:#d4a843;--ok:#34d399;--bad:#ef4444;--font:'Segoe UI','Microsoft YaHei',sans-serif}
+:root{--bg:#f4f1ea;--panel:#ffffff;--line:#ddd6c6;--txt:#1c2733;--sub:#5d6877;--acc:#1f4e79;--gold:#9a7b2d;--ok:#1e7a4c;--bad:#b3402f;--font:'Segoe UI','Microsoft YaHei',sans-serif}
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:var(--bg);color:var(--txt);font-family:var(--font);padding:26px 34px}
 .hd{display:flex;align-items:center;gap:16px;margin-bottom:22px}
@@ -33,9 +33,11 @@ table{width:100%;border-collapse:collapse;font-size:12.5px}
 th{color:var(--sub);text-align:left;padding:6px 8px;font-weight:500;border-bottom:1px solid var(--line)}
 td{padding:7px 8px;border-bottom:1px solid rgba(31,51,84,.5)}
 .tag{padding:2px 9px;border-radius:10px;font-size:11px}
-.t-cache{background:rgba(52,211,153,.15);color:var(--ok)}
-.t-faq{background:rgba(212,168,67,.15);color:var(--gold)}
-.t-rag{background:rgba(59,130,246,.15);color:#60a5fa}
+.t-cache{background:rgba(30,122,76,.1);color:var(--ok)}
+.t-faq{background:rgba(154,123,45,.12);color:var(--gold)}
+.t-rag{background:rgba(31,78,121,.08);color:var(--acc)}
+.card,.kpi{box-shadow:0 1px 4px rgba(28,39,51,.06)}
+.comp{background:#f7f4ee;border:1px solid var(--line)}
 </style>
 </head>
 <body>
@@ -71,31 +73,31 @@ td{padding:7px 8px;border-bottom:1px solid rgba(31,51,84,.5)}
 </div>
 
 <script>
-const dark={textStyle:{color:'#7d93b5'},backgroundColor:'transparent'};
+const dark={textStyle:{color:'#5d6877'},backgroundColor:'transparent'};
 const latC=echarts.init(document.getElementById('latChart'),null,{renderer:'canvas'});
 const funC=echarts.init(document.getElementById('funnelChart'));
 const strC=echarts.init(document.getElementById('stratChart'));
 let latData=[],timeData=[];
 
 latC.setOption({...dark,grid:{left:45,right:15,top:15,bottom:25},
-  xAxis:{type:'category',data:timeData,axisLine:{lineStyle:{color:'#1f3354'}}},
-  yAxis:{type:'value',name:'ms',splitLine:{lineStyle:{color:'#16233c'}}},
-  series:[{type:'line',data:latData,smooth:true,symbol:'none',lineStyle:{color:'#3b82f6',width:2},
-    areaStyle:{color:{type:'linear',x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:'rgba(59,130,246,.35)'},{offset:1,color:'rgba(59,130,246,0)'}]}}}]});
+  xAxis:{type:'category',data:timeData,axisLine:{lineStyle:{color:'#ddd6c6'}}},
+  yAxis:{type:'value',name:'ms',splitLine:{lineStyle:{color:'#ece7db'}}},
+  series:[{type:'line',data:latData,smooth:true,symbol:'none',lineStyle:{color:'#1f4e79',width:2},
+    areaStyle:{color:{type:'linear',x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:'rgba(31,78,121,.25)'},{offset:1,color:'rgba(31,78,121,0)'}]}}}]});
 
 function renderFunnel(s){
   funC.setOption({...dark,series:[{type:'funnel',left:'8%',width:'84%',top:8,bottom:8,gap:4,
-    label:{color:'#dce7f5',formatter:'{b}\n{c} 次'},itemStyle:{borderWidth:0},
-    data:[{value:s.total,name:'全部请求',itemStyle:{color:'#3b82f6'}},
-          {value:s.total-s.cache_hits,name:'穿透缓存',itemStyle:{color:'#d4a843'}},
-          {value:s.rag_calls,name:'进入RAG(消耗LLM)',itemStyle:{color:'#ef4444'}}]}]});
+    label:{color:'#1c2733',formatter:'{b}\n{c} 次'},itemStyle:{borderWidth:0},
+    data:[{value:s.total,name:'全部请求',itemStyle:{color:'#1f4e79'}},
+          {value:s.total-s.cache_hits,name:'穿透缓存',itemStyle:{color:'#9a7b2d'}},
+          {value:s.rag_calls,name:'进入RAG(消耗LLM)',itemStyle:{color:'#b3402f'}}]}]});
 }
 function renderStrat(s){
   const nm={direct:'直接检索',hyde:'HyDE',decompose:'子问题拆分',stepback:'回溯简化'};
   strC.setOption({...dark,series:[{type:'pie',radius:['45%','72%'],
-    label:{color:'#7d93b5',fontSize:11},itemStyle:{borderColor:'#111c30',borderWidth:2},
+    label:{color:'#5d6877',fontSize:11},itemStyle:{borderColor:'#ffffff',borderWidth:2},
     data:Object.entries(s.strategy_count).map(([k,v],i)=>({name:nm[k],value:v,
-      itemStyle:{color:['#3b82f6','#34d399','#d4a843','#a78bfa'][i]}}))}]});
+      itemStyle:{color:['#1f4e79','#1e7a4c','#9a7b2d','#6b5b95'][i]}}))}]});
 }
 
 async function tick(){

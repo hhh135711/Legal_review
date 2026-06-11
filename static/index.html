@@ -6,9 +6,9 @@
 <title>衡鉴 LexiCheck · 企业法务可溯源依据检索系统</title>
 <style>
 :root{
-  --bg:#0b1220; --panel:#111c30; --panel2:#162540; --line:#1f3354;
-  --txt:#dce7f5; --sub:#7d93b5; --acc:#3b82f6; --acc2:#60a5fa;
-  --gold:#d4a843; --ok:#34d399; --warn:#fbbf24; --font:'Segoe UI','Microsoft YaHei',sans-serif;
+  --bg:#f4f1ea; --panel:#ffffff; --panel2:#eef1f6; --line:#ddd6c6;
+  --txt:#1c2733; --sub:#5d6877; --acc:#1f4e79; --acc2:#2e6da4;
+  --gold:#9a7b2d; --ok:#1e7a4c; --warn:#9c6f12; --font:'Segoe UI','Microsoft YaHei',serif-fallback,sans-serif;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:var(--bg);color:var(--txt);font-family:var(--font);min-height:100vh}
@@ -87,6 +87,20 @@ a{color:var(--acc2);text-decoration:none}
 .empty{color:var(--sub);text-align:center;padding:48px 0;font-size:14px}
 .spinner{width:36px;height:36px;border:3px solid var(--line);border-top-color:var(--acc);border-radius:50%;margin:0 auto 14px;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
+/* ===== 律所级浅色主题精修 ===== */
+.card,.qbox{box-shadow:0 1px 4px rgba(28,39,51,.06)}
+.side{box-shadow:1px 0 6px rgba(28,39,51,.05)}
+.logo h1{color:var(--acc)}
+.qbox input{background:#faf8f3}
+.qbox button{background:linear-gradient(135deg,#1f4e79,#16395a)}
+.stage.lit .dot{box-shadow:0 0 8px rgba(31,78,121,.35)}
+.route-cache{background:rgba(30,122,76,.1)}
+.route-faq{background:rgba(154,123,45,.12)}
+.route-rag{background:rgba(31,78,121,.08)}
+.cite:hover{background:rgba(31,78,121,.04)}
+.modal mark{background:rgba(154,123,45,.16)}
+.up{background:#faf8f3}
+body{background:var(--bg) linear-gradient(180deg,#f7f4ee,#f1ede3)}
 </style>
 </head>
 <body>
